@@ -18,35 +18,42 @@ app.post('/webhook', async (req, res) => {
   const event = req.body.event;
 
   try {
-    if (event?.data?.block?.transactions) {
-      for (const tx of event.data.block.transactions) {
-        const { hash, from, to, value } = tx;
+    const logs = event?.data?.block?.logs;
+
+    if (logs && logs.length > 0) {
+      for (const log of logs) {
+        const { transaction, account, topics } = log;
+
+        const tx_hash = transaction.hash;
+        const from_addr = transaction.from?.address;
+        const to_addr = transaction.to?.address;
+        const timestamp = new Date();
 
         const { error } = await supabase
-        .from('degen_transfers')
-        .insert({
-          tx_hash: hash,
-          from_addr: from,
-          to_addr: to,
-          value: value,
-          timestamp: new Date(),
-          raw_json: tx,
-        });
+          .from('degen_transfers') // make sure this is your actual table name
+          .insert({
+            tx_hash,
+            from_addr,
+            to_addr,
+            timestamp,
+            raw_json: log,
+          });
 
         if (error) {
-          console.error(`❌ Failed to insert tx ${hash}:`, error);
+          console.error(`❌ Failed to insert tx ${tx_hash}:`, error);
         } else {
-          console.log(`✅ Stored tx ${hash}`);
+          console.log(`✅ Stored tx ${tx_hash}`);
         }
       }
     }
 
-    res.sendStatus(200); // Let Alchemy know we received it
+    res.sendStatus(200);
   } catch (err) {
     console.error('❌ Error handling webhook:', err);
     res.sendStatus(500);
   }
 });
+
 
 // Start the server
 app.listen(port, () => {
