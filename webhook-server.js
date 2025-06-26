@@ -31,7 +31,7 @@ app.post('/webhook', async (req, res) => {
         const tx_hash = tx?.hash || null;
         const from_addr = tx?.from?.address || null;
         const to_addr = tx?.to?.address || null;
-        const value = tx?.value || null;
+        const value = tx?.value ? BigInt(tx.value).toString() : null;
 
         const { error } = await supabase
           .from('degen_transfers')
