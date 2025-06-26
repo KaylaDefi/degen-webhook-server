@@ -7,7 +7,6 @@ const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY; 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// This makes sure you can receive JSON data
 app.use(express.json());
 
 // This is the webhook endpoint Alchemy will POST to
@@ -24,16 +23,19 @@ app.post('/webhook', async (req, res) => {
       for (const log of logs) {
         const tx = log.transaction;
 
-        const { hash, from, to, value } = tx;
+        const tx_hash = t?.hash || null;
+        const from_addr = tx?.from?.address || null;
+        const to_addr = tx?.to?.address || null;
+        const value = tx?.value || null;
 
         const { error } = await supabase
           .from('degen_transfers')
           .insert({
-            tx_hash: hash || null,
-            from_addr: from?.address || null,
-            to_addr: to?.address || null,
-            value: value || null,
-            timestamp: new Date(),
+            tx_hash,
+            from_addr,
+            to_addr,
+            value,
+            timestamp,
             raw_json: tx || null
           });
 
