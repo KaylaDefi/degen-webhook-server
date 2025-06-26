@@ -35,7 +35,7 @@ app.post('/webhook', async (req, res) => {
             from_addr,
             to_addr,
             value,
-            timestamp,
+            timestamp: new Date(),
             raw_json: tx || null
           });
 
