@@ -35,21 +35,22 @@ app.post('/webhook', async (req, res) => {
 
         const { error } = await supabase
           .from('degen_transfers')
-          .insert({
+          .insert(
+            {
             tx_hash,
             from_addr,
             to_addr,
             value,
             timestamp: new Date(),
             raw_json: tx || null
-          }, {
-            onConflict: ['tx_hash'] 
-          });
+            }, {
+            onConflict: 'tx_hash'
+            });
 
         if (error) {
           console.error(`❌ Failed to insert tx ${tx_hash}:`, error);
         } else {
-          console.log(`✅ Stored tx ${hash}`);
+          console.log(`✅ Stored tx ${tx_hash}`);
         }
       }
     }
