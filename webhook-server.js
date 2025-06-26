@@ -45,7 +45,7 @@ app.post('/webhook', async (req, res) => {
           });
 
         if (error) {
-          console.error(`❌ Failed to insert tx ${hash}:`, error);
+          console.error(`❌ Failed to insert tx ${tx_hash}:`, error);
         } else {
           console.log(`✅ Stored tx ${hash}`);
         }
