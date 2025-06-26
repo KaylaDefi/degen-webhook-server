@@ -29,6 +29,7 @@ app.post('/webhook', async (req, res) => {
         const { error } = await supabase
           .from('degen_transfers')
           .insert({
+            tx_hash: hash || null,
             from_addr: from?.address || null,
             to_addr: to?.address || null,
             value: value || null,
