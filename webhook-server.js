@@ -31,7 +31,18 @@ app.post('/webhook', async (req, res) => {
         const tx_hash = tx?.hash || null;
         const from_addr = tx?.from?.address || null;
         const to_addr = tx?.to?.address || null;
-        const value = tx?.value ? BigInt(tx.value).toString() : null;
+       
+
+        const valueRaw = tx?.value;
+        let value = null;
+
+        if (valueRaw !== undefined && valueRaw !== null) {
+            try {
+            value = BigInt(valueRaw).toString(); // convert to decimal string
+        } catch (err) {
+            console.warn(`⚠️ Could not parse tx.value:`, valueRaw);
+        }
+    }
 
         const { error } = await supabase
           .from('degen_transfers')
@@ -43,7 +54,8 @@ app.post('/webhook', async (req, res) => {
             value,
             timestamp: new Date(),
             raw_json: tx || null
-            }, {
+            }, 
+            {
             onConflict: 'tx_hash'
             });
 
