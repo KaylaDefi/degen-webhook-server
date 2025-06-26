@@ -42,6 +42,8 @@ app.post('/webhook', async (req, res) => {
             value,
             timestamp: new Date(),
             raw_json: tx || null
+          }, {
+            onConflict: ['tx_hash'] 
           });
 
         if (error) {
