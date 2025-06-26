@@ -23,7 +23,7 @@ app.post('/webhook', async (req, res) => {
       for (const log of logs) {
         const tx = log.transaction;
 
-        const tx_hash = t?.hash || null;
+        const tx_hash = tx?.hash || null;
         const from_addr = tx?.from?.address || null;
         const to_addr = tx?.to?.address || null;
         const value = tx?.value || null;
