@@ -20,29 +20,26 @@ app.post('/webhook', async (req, res) => {
   try {
     const logs = event?.data?.block?.logs;
 
-    if (logs && logs.length > 0) {
+    if (logs && Array.isArray(logs)) {
       for (const log of logs) {
-        const { transaction, account, topics } = log;
+        const tx = log.transaction;
 
-        const tx_hash = transaction.hash;
-        const from_addr = transaction.from?.address;
-        const to_addr = transaction.to?.address;
-        const timestamp = new Date();
+        const { hash, from, to, value } = tx;
 
         const { error } = await supabase
-          .from('degen_transfers') // make sure this is your actual table name
+          .from('degen_transfers')
           .insert({
-            tx_hash,
-            from_addr,
-            to_addr,
-            timestamp,
-            raw_json: log,
+            from_addr: from?.address || null,
+            to_addr: to?.address || null,
+            value: value || null,
+            timestamp: new Date(),
+            raw_json: tx || null
           });
 
         if (error) {
-          console.error(`❌ Failed to insert tx ${tx_hash}:`, error);
+          console.error(`❌ Failed to insert tx ${hash}:`, error);
         } else {
-          console.log(`✅ Stored tx ${tx_hash}`);
+          console.log(`✅ Stored tx ${hash}`);
         }
       }
     }
